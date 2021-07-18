@@ -7,7 +7,7 @@ in the requested format.
 # Mongo DB endpoint 
 ## Request URI
 - httpMethod = POST
-- http://localhost:8080/mongo
+- http://3.109.4.23:8080/mongo
 
 ## Request Payload
 The request payload of the first endpoint will include a JSON with 4 fields.
@@ -34,7 +34,7 @@ Response payload should have 3 main fields.
 
 ## GET
 ### Request URI
-> http://localhost:8080/in-memory?key=active-tabs
+> http://3.109.4.23:8080/in-memory?key=active-tabs
 - The request uri of GET endpoint will have 1 query parameter. That is “key”
 param holds the key (any key in string type)
 
@@ -46,7 +46,7 @@ param holds the key (any key in string type)
 
 ## POST
 ### Request URI
-> http://localhost:8080/in-memory
+> http://3.109.4.23:8080/in-memory
 ### Request Payload
 > The request payload of POST endpoint will include a JSON with 2 fields
 
