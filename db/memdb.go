@@ -6,11 +6,16 @@ import (
 	badger "github.com/dgraph-io/badger/v3"
 )
 
+// MemDBManager ...
+// Interface Pattern with following functions SetKV Retrieve
 type MemDBManager interface {
 	SetKV(key, value string) error
 	Retrieve(key string) (out interface{}, err error)
 }
 
+// memdb ...
+// Unexported memdb object for not be misused
+// SingleTon Pattern
 type memdb struct {
 	db *badger.DB
 }
@@ -30,10 +35,16 @@ func inMemInstance() MemDBManager {
 
 }
 
+// Unexported object of the Interface
 var memdbmgr = inMemInstance()
 
+// MemDBMgr ...
+// Exported function to be consumed from anywhere in the project
+// Return the Interface instance to expose the underlying functionality
 func MemDBMgr() MemDBManager { return memdbmgr }
 
+// SetKV ...
+// Set key and associated value for the badger`s in-memory db
 func (m *memdb) SetKV(key, value string) error {
 	err := m.db.Update(func(txn *badger.Txn) error {
 		e := badger.NewEntry([]byte(key), []byte(value))
@@ -43,6 +54,9 @@ func (m *memdb) SetKV(key, value string) error {
 	return err
 }
 
+// Retrieve ...
+// fetches the associated data from In-memory badger DB for the requested key
+// return err if Key not found or Key is empty
 func (m *memdb) Retrieve(key string) (out interface{}, err error) {
 	var valCopy []byte
 	err = m.db.View(func(txn *badger.Txn) error {

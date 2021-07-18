@@ -12,19 +12,23 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+// MongoManager ...
+// Interface Pattern with following functions Retrieve
 type MongoManager interface {
 	Retrieve(input interface{}) (out interface{}, err error)
 }
 
+// mongodb ...
+// Unexported memdb object for not be misused
+// SingleTon Pattern
 type mongodb struct {
 	collection *mongo.Collection
 }
 
 // mongoInstance ...
-// By default, Badger ensures all the data is persisted to the disk.When Badger is running in in-memory mode
-// All the data is stored in the memory. Reads and writes are much faster in in-memory mode,
-// but all the data stored in Badger will be lost in case of a crash or close.
-// To open badger in in-memory mode, set the InMemory option.
+// driver starts with creating a Client from a connection string and subsequently get session
+// Database and Collection types can be used to access the database and collection
+// return the collection embedded inside the unexported mongodb struct
 func mongoInstance() MongoManager {
 
 	context, _ := context.WithTimeout(context.Background(), 10*time.Second)
@@ -47,6 +51,11 @@ var mongomgr = mongoInstance()
 
 func MongoMgr() MongoManager { return mongomgr }
 
+// Retrieve ...
+// Implemets mongodb aggregate functionality with Pipeline stages
+// first stage is to match the records createdAt between start and end date
+// second stage is to project the records and take the sum of count array and put inside totalCount
+// third stage is to match the records totalCount between minCount and maxCount
 func (m *mongodb) Retrieve(input interface{}) (out interface{}, err error) {
 	recordsData := []bson.M{}
 	var mr models.MongoResponse
@@ -68,7 +77,8 @@ func (m *mongodb) Retrieve(input interface{}) (out interface{}, err error) {
 		mr.Msg = err.Error()
 		return mr, err
 	}
-
+	// pipeline parameter must be an array of documents, each representing an aggregation stage.
+	//  Documents pass through the stages in sequence.
 	pipeline := []bson.M{
 		{
 			"$match": bson.M{
@@ -95,7 +105,7 @@ func (m *mongodb) Retrieve(input interface{}) (out interface{}, err error) {
 			},
 		},
 	}
-	// get cursor for generate pipeline
+	// Aggregate executes an aggregate command against the collection and returns a cursor over the resulting documents.
 	cursor, err := m.collection.Aggregate(context.TODO(), pipeline)
 	if err != nil {
 		mr.Msg = err.Error()
@@ -103,17 +113,19 @@ func (m *mongodb) Retrieve(input interface{}) (out interface{}, err error) {
 	}
 	// defer the closing of the cursor
 	defer cursor.Close(context.TODO())
-	// read all data from cursor result to records Data
+	// Cursor.All will decode all of the returned elements at once
 	if err = cursor.All(context.TODO(), &recordsData); err != nil {
 		mr.Msg = err.Error()
 		return mr, err
 	}
+	// return the data if the records are found after pipeline executes
 	if len(recordsData) > 0 {
 		mr.Code = 0
 		mr.Msg = "Success"
 		mr.Records = recordsData
 		return mr, nil
 	}
+
 	mr.Code = http.StatusNoContent
 	mr.Msg = "No Data Found"
 	mr.Records = recordsData

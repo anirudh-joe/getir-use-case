@@ -39,16 +39,21 @@ func TestMongoDbError(t *testing.T) {
 	require.NotEmpty(t, err)
 	require.Errorf(t, err, "parsing time \"2018-13-26\": month out of range")
 
+	// no data found error
+	// min greater than max
 	req.StartDate = "2016-01-02"
 	req.EndDate = "2016-03-02"
 	req.MinCount = 3100
 	req.MaxCount = 3000
 	rs, err := db.MongoMgr().Retrieve(req)
+	// err not empty
 	require.NotEmpty(t, err)
+	// no data found error message
 	require.Errorf(t, err, "no data found")
 	require.NotNil(t, rs)
-
+	// custom response
 	resp = rs.(models.MongoResponse)
+	// type assertion
 	require.Equal(t, 204, resp.Code)
 	require.Equal(t, "No Data Found", resp.Msg)
 	require.Equal(t, 0, len(resp.Records))
@@ -63,12 +68,17 @@ func TestMongoDb(t *testing.T) {
 	req.MinCount = 2900
 	req.MaxCount = 3000
 	rs, err := db.MongoMgr().Retrieve(req)
+	// no error message
 	require.Empty(t, err)
 	require.NotNil(t, rs)
-
+	// type assertion
 	resp = rs.(models.MongoResponse)
+	// custom response code = 0
 	require.Equal(t, 0, resp.Code)
+	// custom response msg = Success
 	require.Equal(t, "Success", resp.Msg)
+	// custom response
+	// or 0 should be less than size of records
 	require.LessOrEqual(t, 0, len(resp.Records))
 
 }
