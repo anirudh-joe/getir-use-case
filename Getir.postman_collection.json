@@ -1,0 +1,84 @@
+{
+	"variables": [],
+	"info": {
+		"name": "Getir",
+		"_postman_id": "b786c0e5-1b02-b5c0-1edc-443953c3ace5",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "http://3.109.4.23:8080/mongo",
+			"request": {
+				"url": "http://3.109.4.23:8080/mongo",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"startDate\": \"2016-01-21\",\r\n\t\"endDate\": \"2016-03-02\",\r\n\t\"minCount\": 2900,\r\n\t\"maxCount\": 3000\r\n}"
+				},
+				"description": "ANPR_POST"
+			},
+			"response": []
+		},
+		{
+			"name": "http://3.109.4.23:8080/in-memory",
+			"request": {
+				"url": "http://3.109.4.23:8080/in-memory",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"key\": \"active-tabs\",\r\n\t\"value\": \"getir1\"\r\n}"
+				},
+				"description": "ANPR_POST"
+			},
+			"response": []
+		},
+		{
+			"name": "http://3.109.4.23:8080/in-memory?key=active-tabs",
+			"request": {
+				"url": {
+					"raw": "http://3.109.4.23:8080/in-memory?key=active-tabs",
+					"protocol": "http",
+					"host": [
+						"3",
+						"109",
+						"4",
+						"23"
+					],
+					"port": "8080",
+					"path": [
+						"in-memory"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "active-tabs",
+							"equals": true,
+							"description": ""
+						}
+					],
+					"variable": []
+				},
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}
